@@ -193,94 +193,18 @@
     /* LOGIN SCREEN STYLES */
     .login-container {
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr;
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 24px;
-      gap: 40px;
-      align-items: center;
-    }
-
-    @media (min-width: 900px) {
-      .login-container {
-        grid-template-columns: 1.2fr 1fr;
-      }
-    }
-
-    /* Left Promo and Safety Panel */
-    .login-promo {
-      display: none;
-    }
-
-    @media (min-width: 900px) {
-      .login-promo {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-    }
-
-    .promo-title {
-      font-size: 2.25rem;
-      font-weight: 800;
-      color: var(--hdfc-blue-dark);
-      line-height: 1.2;
-    }
-
-    .promo-title span {
-      color: var(--hdfc-red);
-    }
-
-    .promo-subtitle {
-      font-size: 1.1rem;
-      color: var(--text-medium);
-      line-height: 1.6;
-    }
-
-    .safety-tips {
-      background-color: var(--white);
-      padding: 24px;
-      border-radius: 12px;
-      border-left: 4px solid var(--hdfc-blue);
-      box-shadow: var(--shadow-md);
-    }
-
-    .safety-tips-title {
-      font-weight: 700;
-      color: var(--hdfc-blue);
-      margin-bottom: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .safety-list {
-      list-style-type: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .safety-list li {
-      font-size: 0.85rem;
-      color: var(--text-medium);
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      line-height: 1.4;
-    }
-
-    .safety-list li::before {
-      content: "•";
-      color: var(--hdfc-red);
-      font-weight: bold;
-      font-size: 1.2rem;
-      line-height: 1;
+      justify-content: center;
+      width: 100%;
+      max-width: 500px; /* slightly increased card width for better desktop view */
+      margin: 0 auto;
+      padding: 40px 24px;
     }
 
     /* Login Card */
     .login-card {
+      width: 100%;
       background-color: var(--white);
       border-radius: 12px;
       box-shadow: var(--shadow-xl);
@@ -1213,26 +1137,7 @@
   <main id="loginScreen" class="screen">
     <div class="login-container">
       
-      <!-- Promo Panel Left -->
-      <div class="login-promo">
-        <h1 class="promo-title">Welcome to <br><span>Secure NetBanking</span></h1>
-        <p class="promo-subtitle">Experience a smarter, safer, and faster way to manage your finances with HDFC Bank's premium dynamic digital workspace.</p>
-        
-        <div class="safety-tips">
-          <div class="safety-tips-title">
-            <svg class="icon" viewBox="0 0 24 24" stroke="#1c3f94"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span>Safe Banking Guidelines</span>
-          </div>
-          <ul class="safety-list">
-            <li>Always check the secure lock icon in your browser's address bar.</li>
-            <li>Never share your NetBanking Password, OTP, or CVV code with anyone.</li>
-            <li>HDFC Bank will never ask for your private banking credentials via Call, SMS, or Email.</li>
-            <li>Always log out of your session securely after completing your transactions.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Login Card Right -->
+      <!-- Login Card -->
       <div class="login-card" id="loginCard">
         <div class="login-card-header">
           <h2>NetBanking Portal</h2>
