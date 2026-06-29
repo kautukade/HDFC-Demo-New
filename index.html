@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDFC Bank - Professional NetBanking Demo</title>
+  <style>
+    /* Premium CSS Variables & Core Design tokens */
+    :root {
+      --hdfc-blue: #1c3f94;
+      --hdfc-blue-dark: #0a2566;
+      --hdfc-blue-light: #eaedf4;
+      --hdfc-red: #e11b22;
+      --hdfc-red-dark: #b81218;
+      --text-dark: #0f172a;
+      --text-medium: #334155;
+      --text-muted: #64748b;
+      --bg-light: #f1f5f9;
+      --white: #ffffff;
+      --success: #10b981;
+      --success-dark: #047857;
+      --success-bg: #ecfdf5;
+      --error: #ef4444;
+      --error-bg: #fef2f2;
+      --border-color: #cbd5e1;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* SVG Icon Helpers */
+    .icon {
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* Perfect HDFC Pure CSS Logo */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .logo-graphic {
+      width: 40px;
+      height: 40px;
+      background-color: var(--hdfc-blue);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+    .logo-inner-white {
+      width: 26px;
+      height: 26px;
+      background-color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-inner-red {
+      width: 14px;
+      height: 14px;
+      background-color: var(--hdfc-red);
+      z-index: 2;
+    }
+    .logo-cross-h {
+      position: absolute;
+      width: 40px;
+      height: 6px;
+      background-color: var(--hdfc-blue);
+      z-index: 1;
+    }
+    .logo-cross-v {
+      position: absolute;
+      width: 6px;
+      height: 40px;
+      background-color: var(--hdfc-blue);
+      z-index: 1;
+    }
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .logo-main {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--hdfc-blue);
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
+    .logo-sub {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    /* Headers */
+    header {
+      background-color: var(--white);
+      border-bottom: 3px solid var(--hdfc-red);
+      padding: 12px 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--success-dark);
+      background-color: var(--success-bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-logout {
+      background-color: var(--hdfc-red);
+      color: var(--white);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover {
+      background-color: var(--hdfc-red-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Screen Management */
+    .screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* LOGIN SCREEN STYLES */
+    .login-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 24px;
+      gap: 40px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .login-container {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    /* Left Promo and Safety Panel */
+    .login-promo {
+      display: none;
+    }
+
+    @media (min-width: 900px) {
+      .login-promo {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+
+    .promo-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--hdfc-blue-dark);
+      line-height: 1.2;
+    }
+
+    .promo-title span {
+      color: var(--hdfc-red);
+    }
+
+    .promo-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-medium);
+      line-height: 1.6;
+    }
+
+    .safety-tips {
+      background-color: var(--white);
+      padding: 24px;
+      border-radius: 12px;
+      border-left: 4px solid var(--hdfc-blue);
+      box-shadow: var(--shadow-md);
+    }
+
+    .safety-tips-title {
+      font-weight: 700;
+      color: var(--hdfc-blue);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .safety-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .safety-list li {
+      font-size: 0.85rem;
+      color: var(--text-medium);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .safety-list li::before {
+      content: "•";
+      color: var(--hdfc-red);
+      font-weight: bold;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* Login Card */
+    .login-card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      overflow: hidden;
+    }
+
+    .login-card-header {
+      background-color: var(--hdfc-blue);
+      color: var(--white);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .login-card-header h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .login-card-header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .login-card-body {
+      padding: 32px 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-medium);
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-dark);
+      background-color: var(--white);
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--hdfc-blue);
+      box-shadow: 0 0 0 3px rgba(28, 63, 148, 0.15);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .password-toggle:hover {
+      color: var(--hdfc-blue);
+    }
+
+    /* Error Alert */
+    .alert-error {
+      background-color: var(--error-bg);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--error);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    .btn-login {
+      width: 100%;
+      background-color: var(--hdfc-blue);
+      color: var(--white);
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-login:hover {
+      background-color: var(--hdfc-blue-dark);
+      box-shadow: var(--shadow-md);
+    }
+
+    .login-card-footer {
+      padding: 20px 24px;
+      background-color: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    .login-card-footer a {
+      color: var(--hdfc-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-card-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* DASHBOARD SCREEN STYLES */
+    .dashboard-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Welcome / Status Bar */
+    .welcome-bar {
+      background-color: var(--white);
+      padding: 20px 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      border-left: 5px solid var(--hdfc-blue);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .welcome-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .welcome-text h1 {
+      font-size: 1.5rem;
+      color: var(--hdfc-blue-dark);
+      font-weight: 800;
+    }
+
+    .welcome-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .security-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--success-dark);
+      background-color: var(--success-bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+
+    /* Financial Overview Cards */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .overview-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Primary Balance Card */
+    .balance-card {
+      background: linear-gradient(135deg, var(--hdfc-blue) 0%, var(--hdfc-blue-dark) 100%);
+      color: var(--white);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+    }
+
+    .balance-card::before {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .card-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .acc-type {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+
+    .acc-number {
+      font-size: 0.85rem;
+      opacity: 0.75;
+      font-family: monospace;
+      margin-top: 2px;
+    }
+
+    .balance-main {
+      margin: 16px 0;
+    }
+
+    .balance-label {
+      font-size: 0.8rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .balance-amount-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .balance-amount {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .btn-toggle-balance {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: var(--white);
+      padding: 6px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .btn-toggle-balance:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Credit Card Outstanding Card */
+    .cc-card {
+      background-color: var(--white);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      border-left: 5px solid var(--hdfc-red);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 180px;
+    }
+
+    .cc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .cc-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--hdfc-blue-dark);
+    }
+
+    .cc-num {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: monospace;
+      margin-top: 2px;
+    }
+
+    .cc-due-amount {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--hdfc-red);
+      letter-spacing: -0.5px;
+      margin-top: 4px;
+    }
+
+    .cc-due-date {
+      font-size: 0.8rem;
+      color: var(--text-medium);
+      font-weight: 600;
+      background-color: var(--bg-light);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    /* Quick Actions Panel */
+    .actions-section {
+      background-color: var(--white);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--hdfc-blue-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (min-width: 600px) {
+      .actions-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .action-btn {
+      background-color: var(--bg-light);
+      border: 1.5px solid transparent;
+      padding: 20px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .action-btn:hover {
+      background-color: var(--white);
+      border-color: var(--hdfc-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .action-btn .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--hdfc-blue-light);
+      color: var(--hdfc-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover .icon-box {
+      background-color: var(--hdfc-blue);
+      color: var(--white);
+    }
+
+    .action-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* Transactions Table Card */
+    .transactions-section {
+      background-color: var(--white);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--bg-light);
+      color: var(--text-medium);
+      font-weight: 700;
+      padding: 14px 16px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-medium);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    .txn-desc {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .txn-ref {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: monospace;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .amount-credit {
+      color: var(--success-dark);
+      font-weight: 700;
+    }
+
+    .amount-debit {
+      color: var(--hdfc-red);
+      font-weight: 700;
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-xl);
+      width: 100%;
+      max-width: 500px;
+      overflow: hidden;
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-header {
+      background-color: var(--hdfc-blue);
+      color: var(--white);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .btn-close-modal {
+      background: none;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .btn-close-modal:hover {
+      opacity: 1;
+    }
+
+    .modal-body {
+      padding: 24px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    /* Transfer Modal specifics */
+    .modal-btn-submit {
+      width: 100%;
+      background-color: var(--hdfc-blue);
+      color: var(--white);
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 12px;
+    }
+
+    .modal-btn-submit:hover {
+      background-color: var(--hdfc-blue-dark);
+    }
+
+    /* Success overlay inside modal */
+    .transfer-success-view {
+      text-align: center;
+      padding: 32px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .success-icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: var(--success-bg);
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    /* Support Chat Area */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 300px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f8fafc;
+      margin-bottom: 16px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .msg-bot {
+      background-color: var(--white);
+      color: var(--text-dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+      border: 1px solid var(--border-color);
+    }
+
+    .msg-user {
+      background-color: var(--hdfc-blue-light);
+      color: var(--hdfc-blue-dark);
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .support-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .support-opt-btn {
+      background-color: var(--white);
+      border: 1px solid var(--hdfc-blue);
+      color: var(--hdfc-blue);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .support-opt-btn:hover {
+      background-color: var(--hdfc-blue);
+      color: var(--white);
+    }
+
+    /* Toast Notification System */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toast {
+      background-color: #0f172a;
+      color: var(--white);
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 280px;
+      animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toast-success {
+      border-left: 4px solid var(--success);
+    }
+
+    /* Credit Card Graphic */
+    .cc-graphic {
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      border-radius: 12px;
+      padding: 20px;
+      color: #ecc94b; /* Gold */
+      position: relative;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-md);
+      font-family: monospace;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cc-graphic-chip {
+      width: 40px;
+      height: 30px;
+      background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%);
+      border-radius: 4px;
+    }
+
+    .cc-graphic-brand {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--white);
+      font-weight: bold;
+    }
+
+    .cc-graphic-num {
+      font-size: 1.25rem;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+
+    .cc-graphic-details {
+      display: flex;
+      justify-content: space-between;
+      color: var(--white);
+      font-size: 0.8rem;
+    }
+
+    .cc-graphic-label {
+      font-size: 0.6rem;
+      color: #a0aec0;
+      text-transform: uppercase;
+    }
+
+    /* Toggle Switches for Card Control */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .toggle-info h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .toggle-info p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border-color);
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--hdfc-blue);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Footers */
+    footer {
+      background-color: var(--hdfc-blue-dark);
+      color: rgba(255, 255, 255, 0.75);
+      padding: 30px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: auto;
+      border-top: 3px solid var(--hdfc-red);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+      text-decoration: underline;
+    }
+
+    .security-compliance {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      opacity: 0.8;
+    }
+
+    .compliance-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GLOBAL SITE HEADER -->
+  <header>
+    <div class="logo-container" onclick="handleLogoClick()">
+      <div class="logo-graphic">
+        <div class="logo-inner-white">
+          <div class="logo-inner-red"></div>
+        </div>
+        <div class="logo-cross-h"></div>
+        <div class="logo-cross-v"></div>
+      </div>
+      <div class="logo-text">
+        <span class="logo-main">HDFC BANK</span>
+        <span class="logo-sub">We understand your world</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="secure-badge">
+        <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Secure Session</span>
+      </div>
+      <button id="headerLogoutBtn" class="btn-logout hidden" onclick="handleLogout()">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- SCREEN 1: LOGIN SCREEN -->
+  <main id="loginScreen" class="screen">
+    <div class="login-container">
+      
+      <!-- Promo Panel Left -->
+      <div class="login-promo">
+        <h1 class="promo-title">Welcome to <br><span>Secure NetBanking</span></h1>
+        <p class="promo-subtitle">Experience a smarter, safer, and faster way to manage your finances with HDFC Bank's premium dynamic digital workspace.</p>
+        
+        <div class="safety-tips">
+          <div class="safety-tips-title">
+            <svg class="icon" viewBox="0 0 24 24" stroke="#1c3f94"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Safe Banking Guidelines</span>
+          </div>
+          <ul class="safety-list">
+            <li>Always check the secure lock icon in your browser's address bar.</li>
+            <li>Never share your NetBanking Password, OTP, or CVV code with anyone.</li>
+            <li>HDFC Bank will never ask for your private banking credentials via Call, SMS, or Email.</li>
+            <li>Always log out of your session securely after completing your transactions.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Login Card Right -->
+      <div class="login-card" id="loginCard">
+        <div class="login-card-header">
+          <h2>NetBanking Portal</h2>
+          <p>Secure Customer Login</p>
+        </div>
+        <div class="login-card-body">
+          
+          <!-- Dynamic Alert Box -->
+          <div id="errorAlert" class="alert-error hidden">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span id="errorMessage">Invalid User ID or Password. Please try again.</span>
+          </div>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <!-- User ID Input -->
+            <div class="form-group">
+              <label class="form-label" for="userIdInput">Customer ID / User ID</label>
+              <div class="input-wrapper">
+                <input type="text" id="userIdInput" class="form-input" placeholder="Enter User ID" required autocomplete="username">
+              </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+              <label class="form-label" for="passwordInput">Password / IPIN</label>
+              <div class="input-wrapper">
+                <input type="password" id="passwordInput" class="form-input" placeholder="Enter Password" required autocomplete="current-password">
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility()" title="Show/Hide Password">
+                  <svg id="eyeIcon" class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+              <span>Secure Login</span>
+              <svg class="icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+          </form>
+        </div>
+        <div class="login-card-footer">
+          <p>First time user? <a href="#" onclick="showDemoCredentialsToast()">Register Now</a> | <a href="#" onclick="showDemoCredentialsToast()">Forgot Password</a></p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- SCREEN 2: DASHBOARD SCREEN -->
+  <main id="dashboardScreen" class="screen hidden">
+    <div class="dashboard-wrapper">
+      
+      <!-- Welcome Bar -->
+      <div class="welcome-bar">
+        <div class="welcome-text">
+          <h1>Welcome, <span id="userNamePlaceholder">Snehal Virendra Jadhav</span></h1>
+          <p id="dateTimePlaceholder">Last login: 29-Jun-2026 10:44 AM | Indian Standard Time</p>
+        </div>
+        <div class="security-status">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>Active Secure Session</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Cards Overview -->
+      <div class="overview-grid">
+        
+        <!-- Savings Balance Card -->
+        <div class="balance-card">
+          <div class="card-header-top">
+            <div>
+              <div class="acc-type">Savings Account</div>
+              <div class="acc-number">A/C: XXXXXXXX4821</div>
+            </div>
+            <svg class="icon" viewBox="0 0 24 24" style="opacity: 0.8;"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+          </div>
+          <div class="balance-main">
+            <div class="balance-label">Available Account Balance</div>
+            <div class="balance-amount-wrapper">
+              <span id="balanceDisplay" class="balance-amount">₹4,82,950.00</span>
+              <button class="btn-toggle-balance" onclick="toggleBalanceVisibility()" title="Toggle Balance Visibility">
+                <svg id="balanceEyeIcon" class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-logout" style="background-color: var(--hdfc-red); font-size: 0.8rem; padding: 6px 12px;" onclick="openTransferModal()">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Instant Transfer</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Credit Card Due Card -->
+        <div class="cc-card">
+          <div class="cc-header">
+            <div>
+              <div class="cc-title">Regalia Gold Credit Card</div>
+              <div class="cc-num">Card: XXXX-XXXX-XXXX-9876</div>
+            </div>
+            <svg class="icon" viewBox="0 0 24 24" style="color: var(--hdfc-blue);"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Total Outstanding Due</div>
+            <div id="creditCardDueAmount" class="cc-due-amount">₹12,450.00</div>
+            <span class="cc-due-date">Due Date: 15-Jul-2026</span>
+          </div>
+          <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button class="btn-logout" style="background-color: var(--hdfc-blue); font-size: 0.8rem; padding: 6px 12px;" onclick="handlePayBill()">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+              <span>Pay Card Bill</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Actions Grid -->
+      <div class="actions-section">
+        <h2 class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span>NetBanking Quick Services</span>
+        </h2>
+        <div class="actions-grid">
+          
+          <!-- Transfer -->
+          <button class="action-btn" onclick="openTransferModal()">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="17" y1="17" x2="7" y2="7"></line><polyline points="7 17 7 7 17 7"></polyline></svg>
+            </div>
+            <span class="action-label">Fund Transfer</span>
+          </button>
+
+          <!-- Statement -->
+          <button class="action-btn" onclick="openStatementModal()">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <span class="action-label">E-Statement</span>
+          </button>
+
+          <!-- Cards Control -->
+          <button class="action-btn" onclick="openCardsModal()">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <span class="action-label">Card Controls</span>
+          </button>
+
+          <!-- Support -->
+          <button class="action-btn" onclick="openSupportModal()">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <span class="action-label">Help & Support</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Recent Transactions Table Card -->
+      <div class="transactions-section">
+        <h2 class="section-title">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <span>Recent Transactions</span>
+        </h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description / Reference</th>
+                <th>Status</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODALS CONTAINER -->
+  <div id="modalOverlay" class="modal-overlay hidden" onclick="closeAllModals(event)">
+    
+    <!-- 1. TRANSFER MODAL -->
+    <div id="transferModal" class="modal-card hidden" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Instant Funds Transfer</h3>
+        <button class="btn-close-modal" onclick="closeModal()">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="transferFormView">
+          <form id="transferForm" onsubmit="handleTransferSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="transferPayee">Select Beneficiary / Payee</label>
+              <select id="transferPayee" class="form-input" onchange="handlePayeeSelection()" required>
+                <option value="">-- Choose Payee --</option>
+                <option value="Suresh Jadhav" data-acc="9988112233" data-ifsc="HDFC0000104">Suresh Jadhav (Father)</option>
+                <option value="Zomato India" data-acc="1029384756" data-ifsc="UTIB0000293">Zomato India Merchant</option>
+                <option value="MSEB Power" data-acc="4455889922" data-ifsc="SBIN0000921">MSEB Power Utility</option>
+                <option value="custom">-- Custom Payee --</option>
+              </select>
+            </div>
+
+            <div id="customPayeeFields" class="hidden">
+              <div class="form-group">
+                <label class="form-label" for="payeeName">Payee Name</label>
+                <input type="text" id="payeeName" class="form-input" placeholder="Enter Full Name">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="payeeAcc">Account Number</label>
+                <input type="text" id="payeeAcc" class="form-input" placeholder="Enter Account Number">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="payeeIFSC">IFSC Code</label>
+                <input type="text" id="payeeIFSC" class="form-input" placeholder="e.g. HDFC0001234">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="transferAmount">Amount (₹)</label>
+              <input type="number" id="transferAmount" class="form-input" placeholder="Enter amount to transfer" min="1" max="100000" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="transferRemarks">Remarks (Optional)</label>
+              <input type="text" id="transferRemarks" class="form-input" placeholder="e.g. Rent, Gift, Medical">
+            </div>
+
+            <button type="submit" class="modal-btn-submit">Confirm & Proceed</button>
+          </form>
+        </div>
+
+        <!-- Transfer Success Screen inside Modal -->
+        <div id="transferSuccessView" class="transfer-success-view hidden">
+          <div class="success-icon-circle">
+            <svg class="icon" style="width: 36px; height: 36px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--success-dark);">Transfer Successful</h4>
+          <p style="font-size: 0.9rem; color: var(--text-medium); line-height: 1.5;" id="successSummaryText">
+            Amount of ₹5,000 has been sent to Suresh Jadhav successfully.
+          </p>
+          <div style="background-color: var(--bg-light); padding: 12px; border-radius: 6px; width: 100%; font-size: 0.8rem; font-family: monospace; text-align: left;">
+            <div>Ref No: TXN<span id="successRefPlaceholder">9283401</span></div>
+            <div>Status: SETTLED (IMPS)</div>
+            <div>Time: <span id="successTimePlaceholder">Just now</span></div>
+          </div>
+          <button class="modal-btn-submit" onclick="closeModal()">Close Window</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. STATEMENT MODAL -->
+    <div id="statementModal" class="modal-card hidden" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>E-Statement Generator</h3>
+        <button class="btn-close-modal" onclick="closeModal()">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">View or download a secure certified electronic statement for Savings Account XXXXXXXX4821.</p>
+        
+        <div class="form-group">
+          <label class="form-label" for="statementPeriod">Select Period</label>
+          <select id="statementPeriod" class="form-input">
+            <option value="last_7_days">Last 7 Days</option>
+            <option value="last_30_days">Last 30 Days (Current Month)</option>
+            <option value="last_3_months">Last 3 Months</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="statementType">Transaction Type</label>
+          <select id="statementType" class="form-input">
+            <option value="all">All Transactions</option>
+            <option value="debits">Debits Only</option>
+            <option value="credits">Credits Only</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+          <button class="modal-btn-submit" style="background-color: var(--hdfc-blue);" onclick="generateMockDownload('PDF')">Download PDF</button>
+          <button class="modal-btn-submit" style="background-color: var(--hdfc-blue-light); color: var(--hdfc-blue-dark);" onclick="generateMockDownload('Excel')">Download Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CARDS CONTROL MODAL -->
+    <div id="cardsModal" class="modal-card hidden" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Card Security & Control</h3>
+        <button class="btn-close-modal" onclick="closeModal()">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- credit card mock graphic -->
+        <div class="cc-graphic">
+          <div class="cc-graphic-brand">HDFC Bank</div>
+          <div class="cc-graphic-chip"></div>
+          <div class="cc-graphic-num">4592 1823 9012 9876</div>
+          <div class="cc-graphic-details">
+            <div>
+              <div class="cc-graphic-label">Card Holder</div>
+              <div>S V JADHAV</div>
+            </div>
+            <div>
+              <div class="cc-graphic-label">Expiry</div>
+              <div>08/31</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-weight: 700; color: var(--hdfc-blue-dark); margin-bottom: 12px; font-size: 1rem;">Transaction Preferences</h4>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <h4>Online (E-Commerce) Transactions</h4>
+            <p>Allow payments on online shopping platforms</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="ccOnline" checked onchange="handleCCLimitToggle('Online Transactions')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <h4>International Transactions</h4>
+            <p>Allow foreign currency billing & ATM usage</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="ccInternational" onchange="handleCCLimitToggle('International usage')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row" style="border-bottom: none;">
+          <div class="toggle-info">
+            <h4>Contactless Payments (Tap & Pay)</h4>
+            <p>Allow POS transactions without IPIN up to ₹5,000</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="ccContactless" checked onchange="handleCCLimitToggle('Contactless payment')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <button class="modal-btn-submit" onclick="closeModal()" style="margin-top: 16px;">Save & Apply Settings</button>
+      </div>
+    </div>
+
+    <!-- 4. SUPPORT MODAL -->
+    <div id="supportModal" class="modal-card hidden" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>HDFC Virtual Assistant</h3>
+        <button class="btn-close-modal" onclick="closeModal()">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Welcome to HDFC Online Helpdesk. Select any typical query below for immediate guidance:</p>
+        
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg msg-bot">
+              Hello Snehal! How can I assist you with your HDFC NetBanking account today?
+            </div>
+          </div>
+        </div>
+
+        <div class="support-options">
+          <button class="support-opt-btn" onclick="triggerSupportReply('How do I update my mobile number?', 'To update your registered mobile number, please visit your nearest HDFC ATM or Branch with an official ID card. Alternatively, register using your active Credit card inside Profile Settings.')">Update Mobile Number</button>
+          <button class="support-opt-btn" onclick="triggerSupportReply('How can I apply for a home loan?', 'You are pre-approved for an HDFC Home Loan up to ₹75 Lakhs! Click \'Apply Now\' under our Loans module to receive instant in-principle sanction online.')">Apply Home Loan</button>
+          <button class="support-opt-btn" onclick="triggerSupportReply('What should I do if my card is lost?', 'If your card is lost or stolen, toggle the card status to BLOCKED instantly under Card Controls or dial our 24/7 emergency toll-free number: 1800 202 6161 immediately.')">Block Lost Card</button>
+          <button class="support-opt-btn" onclick="triggerSupportReply('Where is my nearest HDFC Branch?', 'You can find authorized HDFC branches and 24/7 ATM facilities near your location by searching on our GPS locator tool on our public website or by sending \'ATM\' via WhatsApp on 70333 70000.')">Find ATM/Branch</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST CONTAINER FOR DYNAMIC POPUPS -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- GLOBAL SITE FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="#" onclick="showDemoCredentialsToast()">Security Guidelines</a>
+      <a href="#" onclick="showDemoCredentialsToast()">Terms of Use</a>
+      <a href="#" onclick="showDemoCredentialsToast()">Privacy Policy</a>
+      <a href="#" onclick="showDemoCredentialsToast()">Customer Support Desk</a>
+    </div>
+    <p>© Copyright 2026 HDFC Bank Ltd. All rights reserved.</p>
+    <div class="security-compliance">
+      <div class="compliance-item">
+        <svg class="icon" viewBox="0 0 24 24" style="color: var(--success);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>128-bit SSL Secure Banking</span>
+      </div>
+      <div class="compliance-item">
+        <svg class="icon" viewBox="0 0 24 24" style="color: #ecc94b;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Safe & Certified Portal</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CORE APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    // Live Account Data Engine (Simulated State)
+    const state = {
+      user: null,
+      balance: 482950.00,
+      balanceVisible: true,
+      creditCardDue: 12450.00,
+      transactions: [
+        { id: 1, date: '28-Jun-2026', desc: 'Salary Credit (Employer Corp)', ref: 'REF-N23429813', amount: 125000.00, type: 'credit' },
+        { id: 2, date: '27-Jun-2026', desc: 'UPI-Zomato Food Order', ref: 'REF-UPI6092143', amount: 750.00, type: 'debit' },
+        { id: 3, date: '25-Jun-2026', desc: 'Netflix India Subscription', ref: 'REF-N41209384', amount: 649.00, type: 'debit' },
+        { id: 4, date: '22-Jun-2026', desc: 'ATM Cash Withdrawal', ref: 'REF-ATM0981230', amount: 10000.00, type: 'debit' },
+        { id: 5, date: '20-Jun-2026', desc: 'Amazon India Shopping', ref: 'REF-TXN4820194', amount: 4200.00, type: 'debit' },
+        { id: 6, date: '18-Jun-2026', desc: 'Transfer from Suresh Jadhav', ref: 'REF-I92384023', amount: 15000.00, type: 'credit' }
+      ]
+    };
+
+    // Initialize application on load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set active system time dynamically
+      updateSystemDateTime();
+      setInterval(updateSystemDateTime, 60000);
+      renderTransactionsTable();
+    });
+
+    // Helper: Format to beautiful Indian Currency format
+    function formatToINR(amount) {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2
+      }).format(amount);
+    }
+
+    // Dynamic clock date time formatter
+    function updateSystemDateTime() {
+      const dateElement = document.getElementById('dateTimePlaceholder');
+      if (dateElement) {
+        const now = new Date();
+        const options = { 
+          day: '2-digit', 
+          month: 'short', 
+          year: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        };
+        const formattedDate = now.toLocaleString('en-IN', options).replace(',', '');
+        dateElement.textContent = `Last login: ${formattedDate} | Indian Standard Time`;
+      }
+    }
+
+    // Show/Hide Password Toggle
+    let isPasswordHidden = true;
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('passwordInput');
+      const eyeIcon = document.getElementById('eyeIcon');
+      isPasswordHidden = !isPasswordHidden;
+      
+      if (isPasswordHidden) {
+        passwordInput.type = 'password';
+        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      } else {
+        passwordInput.type = 'text';
+        // Eye-off icon
+        eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      }
+    }
+
+    // Toggle Savings Balance Visibility
+    function toggleBalanceVisibility() {
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      const balanceEyeIcon = document.getElementById('balanceEyeIcon');
+      state.balanceVisible = !state.balanceVisible;
+
+      if (state.balanceVisible) {
+        balanceDisplay.textContent = formatToINR(state.balance);
+        balanceEyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      } else {
+        balanceDisplay.textContent = '₹ ••••••••';
+        balanceEyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      }
+    }
+
+    // Login Form Validation
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const userId = document.getElementById('userIdInput').value.trim().toLowerCase();
+      const password = document.getElementById('passwordInput').value.trim();
+      const errorAlert = document.getElementById('errorAlert');
+
+      // Check credentials strictly: User ID: snehal, Password: snehal123
+      if (userId === 'snehal' && password === 'snehal123') {
+        errorAlert.classList.add('hidden');
+        state.user = 'Snehal Virendra Jadhav';
+        
+        // Show Toast
+        showToast('Login successful! Welcome to HDFC NetBanking Portal.', 'success');
+        
+        // Transition Screens
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboardScreen').classList.remove('hidden');
+        document.getElementById('headerLogoutBtn').classList.remove('hidden');
+        
+        // Clear login form inputs
+        document.getElementById('loginForm').reset();
+      } else {
+        errorAlert.classList.remove('hidden');
+      }
+    }
+
+    // Logout Action
+    function handleLogout() {
+      state.user = null;
+      document.getElementById('dashboardScreen').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('headerLogoutBtn').classList.add('hidden');
+      showToast('You have successfully logged out of your banking session.', 'success');
+    }
+
+    // Handle clicking the HDFC logo
+    function handleLogoClick() {
+      if (state.user) {
+        showToast('You are currently inside your secure session dashboard.', 'success');
+      } else {
+        showToast('Standard HDFC login page. Please enter credentials to proceed.', 'success');
+      }
+    }
+
+    // Render Dynamic Transactions Table
+    function renderTransactionsTable() {
+      const tbody = document.getElementById('transactionsTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      state.transactions.forEach(txn => {
+        const isCredit = txn.type === 'credit';
+        const formattedAmount = (isCredit ? '+ ' : '- ') + formatToINR(Math.abs(txn.amount));
+        const amountClass = isCredit ? 'amount-credit' : 'amount-debit';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${txn.date}</td>
+          <td>
+            <span class="txn-desc">${txn.desc}</span>
+            <span class="txn-ref">${txn.ref}</span>
+          </td>
+          <td>
+            <span style="font-size: 0.8rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; background-color: ${isCredit ? 'var(--success-bg)' : '#fee2e2'}; color: ${isCredit ? 'var(--success-dark)' : 'var(--hdfc-red)'};">
+              COMPLETED
+            </span>
+          </td>
+          <td class="${amountClass}" style="text-align: right;">${formattedAmount}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Modal Control System
+    const overlay = document.getElementById('modalOverlay');
+    function closeModal() {
+      overlay.classList.add('hidden');
+      // Hide all card elements inside
+      document.getElementById('transferModal').classList.add('hidden');
+      document.getElementById('statementModal').classList.add('hidden');
+      document.getElementById('cardsModal').classList.add('hidden');
+      document.getElementById('supportModal').classList.add('hidden');
+      
+      // Reset transfer view if opened
+      document.getElementById('transferFormView').classList.remove('hidden');
+      document.getElementById('transferSuccessView').classList.add('hidden');
+      document.getElementById('transferForm').reset();
+      document.getElementById('customPayeeFields').classList.add('hidden');
+    }
+
+    function closeAllModals(event) {
+      if (event.target === overlay) {
+        closeModal();
+      }
+    }
+
+    function openModal(modalId) {
+      overlay.classList.remove('hidden');
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    // Action 1: Fund Transfer Operations
+    function openTransferModal() {
+      openModal('transferModal');
+    }
+
+    function handlePayeeSelection() {
+      const select = document.getElementById('transferPayee');
+      const customFields = document.getElementById('customPayeeFields');
+      
+      const payeeName = document.getElementById('payeeName');
+      const payeeAcc = document.getElementById('payeeAcc');
+      const payeeIFSC = document.getElementById('payeeIFSC');
+
+      if (select.value === 'custom') {
+        customFields.classList.remove('hidden');
+        payeeName.required = true;
+        payeeAcc.required = true;
+        payeeIFSC.required = true;
+      } else {
+        customFields.classList.add('hidden');
+        payeeName.required = false;
+        payeeAcc.required = false;
+        payeeIFSC.required = false;
+      }
+    }
+
+    function handleTransferSubmit(event) {
+      event.preventDefault();
+      const select = document.getElementById('transferPayee');
+      let name = '';
+      let amount = parseFloat(document.getElementById('transferAmount').value);
+      let remarks = document.getElementById('transferRemarks').value.trim() || 'Fund Transfer';
+
+      if (select.value === 'custom') {
+        name = document.getElementById('payeeName').value.trim();
+      } else if (select.value) {
+        name = select.value;
+      } else {
+        showToast('Please select a valid beneficiary.', 'error');
+        return;
+      }
+
+      // Balance validation Check
+      if (amount > state.balance) {
+        showToast('Insufficient funds! Your savings balance is lower than the transfer amount.', 'error');
+        return;
+      }
+
+      // Deduct balance
+      state.balance -= amount;
+      
+      // Update UI balance displays
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      if (state.balanceVisible) {
+        balanceDisplay.textContent = formatToINR(state.balance);
+      } else {
+        balanceDisplay.textContent = '₹ ••••••••';
+      }
+
+      // Create simulated txn reference
+      const txId = 'REF-T' + Math.floor(10000000 + Math.random() * 90000000);
+      const dateStr = getTodayFormatted();
+
+      // Add debit to transactions list at the top (index 0)
+      state.transactions.unshift({
+        id: Date.now(),
+        date: dateStr,
+        desc: `Transfer to ${name} (${remarks})`,
+        ref: txId,
+        amount: -amount,
+        type: 'debit'
+      });
+
+      // Rerender table
+      renderTransactionsTable();
+
+      // Setup success screen values
+      document.getElementById('successSummaryText').textContent = `Amount of ${formatToINR(amount)} has been sent to ${name} successfully from A/C XXXXXXXX4821.`;
+      document.getElementById('successRefPlaceholder').textContent = txId;
+      document.getElementById('successTimePlaceholder').textContent = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+      // Flip modal view to success check
+      document.getElementById('transferFormView').classList.add('hidden');
+      document.getElementById('transferSuccessView').classList.remove('hidden');
+
+      // Display dynamic toast too
+      showToast(`Transferred ${formatToINR(amount)} successfully.`, 'success');
+    }
+
+    function getTodayFormatted() {
+      const now = new Date();
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${now.getDate()}-${months[now.getMonth()]}-${now.getFullYear()}`;
+    }
+
+    // Action 2: E-Statement Modal Operations
+    function openStatementModal() {
+      openModal('statementModal');
+    }
+
+    function generateMockDownload(format) {
+      const period = document.getElementById('statementPeriod').value;
+      const type = document.getElementById('statementType').value;
+      
+      showToast(`Generating secure ${format} Statement...`, 'success');
+      
+      setTimeout(() => {
+        closeModal();
+        showToast(`Download Complete: HDFC_Statement_${period}_${type}.${format.toLowerCase()}`, 'success');
+      }, 1200);
+    }
+
+    // Action 3: Credit Card Controls Modal
+    function openCardsModal() {
+      openModal('cardsModal');
+    }
+
+    function handleCCLimitToggle(settingName) {
+      showToast(`Preference changed: ${settingName} updated successfully.`, 'success');
+    }
+
+    function handlePayBill() {
+      if (state.creditCardDue <= 0) {
+        showToast('Your outstanding credit card balance is already ₹0.00.', 'success');
+        return;
+      }
+
+      const billAmount = state.creditCardDue;
+      
+      if (billAmount > state.balance) {
+        showToast('Insufficient account balance to pay your card outstanding.', 'error');
+        return;
+      }
+
+      // Deduct balance and clear outstanding credit card balance
+      state.balance -= billAmount;
+      state.creditCardDue = 0;
+
+      // Update balance UI
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      if (state.balanceVisible) {
+        balanceDisplay.textContent = formatToINR(state.balance);
+      } else {
+        balanceDisplay.textContent = '₹ ••••••••';
+      }
+
+      // Update outstanding UI
+      document.getElementById('creditCardDueAmount').textContent = '₹0.00';
+
+      // Insert transaction row
+      const txId = 'REF-CC' + Math.floor(10000000 + Math.random() * 90000000);
+      state.transactions.unshift({
+        id: Date.now(),
+        date: getTodayFormatted(),
+        desc: 'HDFC CC Bill Payment - Card ending 9876',
+        ref: txId,
+        amount: -billAmount,
+        type: 'debit'
+      });
+
+      renderTransactionsTable();
+      showToast(`Credit Card bill of ${formatToINR(billAmount)} paid successfully.`, 'success');
+    }
+
+    // Action 4: Virtual Assistant Bot Simulation
+    function openSupportModal() {
+      openModal('supportModal');
+    }
+
+    function triggerSupportReply(userQuestion, botAnswer) {
+      const chatMessages = document.getElementById('chatMessages');
+      
+      // 1. Append User Message
+      const userMsgDiv = document.createElement('div');
+      userMsgDiv.className = 'chat-msg msg-user';
+      userMsgDiv.textContent = userQuestion;
+      chatMessages.appendChild(userMsgDiv);
+
+      // Scroll bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // 2. Append simulated bot delay answer
+      setTimeout(() => {
+        const botMsgDiv = document.createElement('div');
+        botMsgDiv.className = 'chat-msg msg-bot';
+        botMsgDiv.textContent = botAnswer;
+        chatMessages.appendChild(botMsgDiv);
+        
+        // Scroll bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 500);
+    }
+
+    // Toast Notification System helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      // Render success checkmark or error warning cross
+      const iconMarkup = type === 'success' 
+        ? '<svg class="icon" style="color: var(--success);" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
+        : '<svg class="icon" style="color: var(--error);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+      toast.innerHTML = `
+        ${iconMarkup}
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Auto dismiss after 3.5 seconds
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(50px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3500);
+    }
+
+    // Quick helper for registration text info clicks
+    function showDemoCredentialsToast() {
+      showToast('Demo Environment: Register/Forgot PIN links are deactivated.', 'success');
+    }
+  </script>
+</body>
+</html>
